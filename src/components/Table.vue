@@ -5,7 +5,7 @@
       <a class="mr-20" href="#" v-on:click="this.reverse ? sortASC(this.table.info, 'rating') : sortDESC(this.table.info, 'rating')">Рейтинг</a>
       <a href="#" v-on:click="this.reverse ? sortASC(this.table.info, 'registration_date') : sortDESC(this.table.info, 'registration_date')">Дата</a>
     </div>
-    <div class="mb-10">
+    <div style="position: relative" class="mb-10">
       <div class="t-header">
         <div class="t-row">
           <div class="t-col" :key="key" v-for="(item, key) in table.header">{{item}}</div>
@@ -16,10 +16,13 @@
         <div class="t-col" :key="key" v-for="(item, key) in items" v-show="key !== 'id'" >
           {{item}}
         </div>
-        <div class="t-col"><a href="#" v-on:click="del(items.id)">del</a></div>
+        <div class="t-col"><a href="#" v-on:click="modal(items.id)">del</a></div>
+      </div>
+      <div class="modal" v-show="modalStatus">
+        <button @click="del(itemDel)">yas</button>
+        <button @click="modalStatus = false">no</button>
       </div>
     </div>
-
 
     <button :disabled="pageNumber===0" @click="prevPage">
       Previous
@@ -33,6 +36,7 @@
       <option v-on:click="tableSize(10)">10</option>
       <option v-on:click="tableSize(20)">20</option>
     </select>
+
   </div>
 </template>
 
@@ -48,6 +52,8 @@ export default {
   data: () => {
     return {
       pageNumber: 0,
+      modalStatus: false,
+      itemDel: '',
       sortKey: 'name',
       reverse: true,
       search: "",
@@ -117,13 +123,19 @@ export default {
     tableSize(number) {
       this.table.size = number
     },
-    del: function(table) {
+    modal: function (ID) {
+      this.itemDel = ID;
+      this.modalStatus = true;
+    },
+    del: function(ID) {
       for (let key in this.table.info) {
         let el = this.table.info[key];
 
-        if (el.id === table) {
+        if (el.id === ID) {
           delete this.table.info[key];
         }
+
+        this.modalStatus = false;
       }
     },
     sortASC: function(table, param) {
@@ -168,5 +180,22 @@ export default {
   }
   .mb-10 {
     margin-bottom: 10px;
+  }
+  .modal {
+    background-color: #8f8f8f;
+    padding: 20px;
+    max-width: 100px;
+    display: flex;
+    justify-content: space-between;
+    position: absolute;
+    right: 0;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    height: 30px;
+  }
+  .modal button {
+    cursor: pointer;
   }
 </style>
